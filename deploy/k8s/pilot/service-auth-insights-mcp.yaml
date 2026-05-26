@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: auth-insights-mcp
+  namespace: dmartino-insights-mcp-sso
+  labels:
+    app: auth-insights-mcp
+spec:
+  selector:
+    app: auth-insights-mcp
+  ports:
+    - name: http
+      port: 8080
+      targetPort: http
+      protocol: TCP
+  type: ClusterIP

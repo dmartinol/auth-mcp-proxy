@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auth-insights-mcp
+  namespace: dmartino-insights-mcp-sso
+  labels:
+    app: auth-insights-mcp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: auth-insights-mcp
+  template:
+    metadata:
+      labels:
+        app: auth-insights-mcp
+    spec:
+      # Uncomment if the namespace cannot pull from quay.io/dmartino
+      # imagePullSecrets:
+      #   - name: quay-dmartino-pull
+      containers:
+        - name: auth-mcp-proxy
+          image: quay.io/dmartino/auth-mcp-proxy:latest
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          envFrom:
+            - configMapRef:
+                name: auth-mcp-proxy
+            - secretRef:
+                name: auth-mcp-proxy
+          readinessProbe:
+            httpGet:
+              path: /ready
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+        - name: insights-mcp
+          # Use the same image as prod insights-mcp in tfigenbl-insights-mcp
+          image: quay.io/CHANGE_ME/insights-mcp:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: mcp
+              containerPort: 8080
+              protocol: TCP
+          # No insights-mcp-credentials volume — user Bearer from SSO only
+          env: []
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 512Mi

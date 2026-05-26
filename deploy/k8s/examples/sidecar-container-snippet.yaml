@@ -1,0 +1,23 @@
+# Generic sidecar fragment — merge into your MCP Deployment spec.
+# Full pilot example: deploy/k8s/pilot/deployment-auth-insights-mcp.yaml
+- name: auth-mcp-proxy
+  image: quay.io/dmartino/auth-mcp-proxy:latest
+  ports:
+    - name: http
+      containerPort: 8080
+  envFrom:
+    - configMapRef:
+        name: auth-mcp-proxy
+    - secretRef:
+        name: auth-mcp-proxy
+  env:
+    - name: MCP_UPSTREAM_URL
+      value: "http://127.0.0.1:8080"
+  readinessProbe:
+    httpGet:
+      path: /ready
+      port: http
+  livenessProbe:
+    httpGet:
+      path: /health
+      port: http

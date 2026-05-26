@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-mcp-proxy
+  namespace: dmartino-insights-mcp-sso
+  labels:
+    app: auth-insights-mcp
+data:
+  LISTEN_HOST: "0.0.0.0"
+  LISTEN_PORT: "8080"
+  # Must match Route URL exactly (scheme, host, path)
+  MCP_PUBLIC_URL: "https://CHANGE_ME.example.com/mcp"
+  MCP_UPSTREAM_URL: "http://127.0.0.1:8080"
+  RED_HAT_SSO_ISSUER: "https://sso.redhat.com/auth/realms/redhat-external"
+  REQUIRED_SCOPES: "api.console,api.ocm"
+  CLIENT_REGISTRATION_MODE: "pre_registered"
+  LOG_LEVEL: "info"

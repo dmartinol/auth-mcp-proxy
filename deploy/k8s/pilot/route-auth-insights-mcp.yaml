@@ -1,0 +1,19 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: auth-insights-mcp
+  namespace: dmartino-insights-mcp-sso
+  labels:
+    app: auth-insights-mcp
+spec:
+  host: CHANGE_ME.example.com
+  path: /mcp
+  to:
+    kind: Service
+    name: auth-insights-mcp
+    weight: 100
+  port:
+    targetPort: http
+  tls:
+    termination: edge
+    insecureEdgeTerminationPolicy: Redirect
